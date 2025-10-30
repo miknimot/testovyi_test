@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ПТС — защищённый тест (no‑CORS)</title>
+<style>
+  body{font-family:Arial, sans-serif; background:#f4f4f4; margin:0; padding:20px}
+  h1{text-align:center;color:#333}
+  .card{background:#fff;border-radius:10px;padding:16px;margin:12px auto;max-width:720px;box-shadow:0 2px 6px rgba(0,0,0,0.08)}
+  .field{margin:8px 0}
+  label{display:block;margin:6px 0;cursor:pointer}
+  .actions{text-align:center;margin-top:14px}
+  button{background:#1976d2;color:#fff;border:none;padding:10px 18px;border-radius:6px;cursor:pointer;font-size:15px}
+  button.secondary{background:#4caf50}
+  #result{font-weight:700;text-align:center;margin-top:12px}
+  input[type="text"]{padding:8px;border-radius:6px;border:1px solid #ccc;width:260px}
+  input.group{width:140px;margin-left:10px}
+  .small{font-size:13px;color:#666}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Тест: Природно-технические системы (ПТС)</h1>
+  <div id="intro">
+    <p class="small">Введите имя и группу. Результаты сохраняются в Google Sheets.</p>
+    <div class="field">
+      <input id="studentName" type="text" placeholder="Фамилия Имя">
+      <input id="studentGroup" class="group" type="text" placeholder="Группа">
+    </div>
+    <div class="actions">
+      <button onclick="startTest()">Начать тест</button>
+    </div>
+  </div>
+
+  <form id="testForm" style="display:none" class="small" onsubmit="event.preventDefault(); submitTest();">
+
+    <div class="question card" style="box-shadow:none">
+      <p><strong>1. Что представляет собой природно-техническая система (ПТС)?</strong></p>
+      <label><input type="radio" name="q1" value="A"> Только совокупность природных компонентов</label>
+      <label><input type="radio" name="q1" value="B"> Только инженерные сооружения</label>
+      <label><input type="radio" name="q1" value="C"> Взаимодействие природных и техногенных элементов</label>
+      <label><input type="radio" name="q1" value="D"> Система наблюдений за средой</label>
+    </div>
+
+    <div class="question card" style="box-shadow:none">
+      <p><strong>2. К какому типу ПТС относится отдельное сооружение и прилегающая часть литосферы?</strong></p>
+      <label><input type="radio" name="q2" value="A"> Локальная</label>
+      <label><input type="radio" name="q2" value="B"> Элементарная</label>
+      <label><input type="radio" name="q2" value="C"> Региональная</label>
+      <label><input type="radio" name="q2" value="D"> Глобальная</label>
+    </div>
+
+    <div class="question card" style="box-shadow:none">
+      <p><strong>3. Что понимают под «сферой взаимодействия»?</strong></p>
+      <label><input type="radio" name="q3" value="A"> Зону геосреды под влиянием сооружения</label>
+      <label><input type="radio" name="q3" value="B"> Район строительства</label>
+      <label><input type="radio" name="q3" value="C"> Зону подземных вод</label>
+      <label><input type="radio" name="q3" value="D"> Участок без инженерных процессов</label>
+    </div>
+
+    <div class="question card" style="box-shadow:none">
+      <p><strong>4. Чем отличается стохастический прогноз от детерминированного?</strong></p>
+      <label><input type="radio" name="q4" value="A"> Учитывает случайные факторы</label>
+      <label><input type="radio" name="q4" value="B"> Использует только лабораторные данные</label>
+      <label><input type="radio" name="q4" value="C"> Применяется к элементарным системам</label>
+      <label><input type="radio" name="q4" value="D"> Основан на точных моделях</label>
+    </div>
+
+    <div class="question card" style="box-shadow:none">
+      <p><strong>5. Какова основная задача литомониторинга?</strong></p>
+      <label><input type="radio" name="q5" value="A"> Контроль состояния геосреды</label>
+      <label><input type="radio" name="q5" value="B"> Анализ стоимости работ</label>
+      <label><input type="radio" name="q5" value="C"> Определение глубины фундамента</label>
+      <label><input type="radio" name="q5" value="D"> Расчёт уровня подземных вод</label>
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="secondary">Отправить</button>
+    </div>
+
+    <p id="result"></p>
+  </form>
+
+  <p class="small" style="margin-top:12px">Если тест не отправляется — проверьте, что веб‑приложение опубликовано для всех.</p>
+</div>
+
+<script>
+const scriptURL = "https://script.google.com/macros/s/AKfycbw48qT2SbtW2CsLTvQPGQnPyB9_os0mC4P585jadgZt4dB6fWO6uiVHybqhgGtovrBbfw/exec";
+
+function startTest() {
+  const name = document.getElementById('studentName').value.trim();
+  const group = document.getElementById('studentGroup').value.trim();
+  if (!name || !group) { alert('Введите имя и группу.'); return; }
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('testForm').style.display = 'block';
+}
+
+function submitTest() {
+  const name = document.getElementById('studentName').value.trim();
+  const group = document.getElementById('studentGroup').value.trim();
+  const answers = {
+    q1: document.querySelector('input[name="q1"]:checked')?.value || '',
+    q2: document.querySelector('input[name="q2"]:checked')?.value || '',
+    q3: document.querySelector('input[name="q3"]:checked')?.value || '',
+    q4: document.querySelector('input[name="q4"]:checked')?.value || '',
+    q5: document.querySelector('input[name="q5"]:checked')?.value || ''
+  };
+
+  // Используем no-cors, чтобы не споткнуться о CORS-предполет;
+  // ответ прочитать нельзя, но он нам и не нужен — балл посчитается на стороне скрипта.
+  fetch(scriptURL, {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify({
+      test: "ПТС",
+      group: group,
+      name: name,
+      ...answers
+    })
+  })
+  .catch(() => {});
+
+  document.getElementById('result').innerText = 'Ответы отправлены! Проверьте вашу запись в таблице.';
+  document.querySelector('button.secondary').disabled = true;
+}
+</script>
+</body>
+</html>
